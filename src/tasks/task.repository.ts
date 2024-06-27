@@ -17,7 +17,7 @@ export class TaskRepository extends Repository<Task> {
     }
 
     public async findById(id: number): Promise<Task | null> {
-        return this.findOneBy({ id: id });
+        return await this.findOneBy({ id: id });
     }
 
     public async store(task: CreateTaskDto): Promise<Task> {

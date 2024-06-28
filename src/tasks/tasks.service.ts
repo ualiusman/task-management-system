@@ -10,7 +10,7 @@ export class TasksService {
 
 
     constructor(
-        @InjectRepository(TaskRepository)
+        @InjectRepository(Task)
         private taskRepositoy: TaskRepository) {
 
     }

@@ -1,6 +1,7 @@
 import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
+import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 
@@ -19,9 +20,11 @@ export class AuthService {
 
         const { username, password } = authCredentialsDto;
 
+
         const user = new User();
         user.username = username;
-        user.password = password;
+        user.salt = await bcrypt.genSalt();
+        user.password = await this.hashPassword(password, user.salt);
 
         try {
             await user.save();
@@ -34,5 +37,10 @@ export class AuthService {
             }
         }
 
+    }
+
+
+    private async hashPassword(password: string, salt: string) {
+        return bcrypt.hash(password, salt);
     }
 }

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
@@ -10,7 +10,7 @@ export class AuthService {
 
 
     constructor(
-        @InjectRepository(UserRepository)
+        @InjectRepository(User)
         private userRepositoy: UserRepository) {
 
     }
@@ -40,7 +40,21 @@ export class AuthService {
     }
 
 
-    private async hashPassword(password: string, salt: string) {
+    async validateUserPassword(authCredentialsDto: AuthCredentialsDto): Promise<string> {
+        const { username, password } = authCredentialsDto;
+        const user = await this.userRepositoy.findOneBy({ username });
+
+        if (user && await user.validatePassword(password)) {
+            return user.username;
+        } else {
+
+            throw new UnauthorizedException("Invalid Credentials")
+        }
+
+    }
+
+
+    private async hashPassword(password: string, salt: string): Promise<string> {
         return bcrypt.hash(password, salt);
     }
 }

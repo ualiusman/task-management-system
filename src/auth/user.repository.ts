@@ -12,10 +12,5 @@ export class UserRepository extends Repository<User> {
     }
 
 
-    async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-
-
-    }
-
 
 }
